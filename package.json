@@ -5,7 +5,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "postinstall": "cd frontend && npm install && npm run build && cd ../api && npm install",
+    "postinstall": "cd frontend && npm install --include=dev && npm run build && cd ../api && npm install",
     "build": "cd frontend && npm install && npm run build",
     "start": "cd api && node index.js"
   }
