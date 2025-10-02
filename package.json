@@ -1,8 +1,12 @@
 {
   "name": "nft-gallery-root",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "build": "cd frontend && npm install && npm run build && cd ../api && npm install",
+    "postinstall": "cd frontend && npm ci && npm run build && cd ../api && npm ci",
+    "build": "cd frontend && npm ci && npm run build",
     "start": "cd api && node index.js"
   }
 }

@@ -10,13 +10,21 @@ const bs58 = require('bs58');
 const nacl = require('tweetnacl');
 const path = require('path');
 
-const frontendDist = path.join(__dirname, '../frontend/dist');
-if (process.env.SERVE_FRONTEND === 'true' || process.env.NODE_ENV === 'production') {
+// after your other routes and before app.listen
+// Serve frontend build when present
+const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
+
+const fs = require('fs');
+if (fs.existsSync(frontendDist)) {
   app.use(express.static(frontendDist));
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/health')) return next();
+
+  app.get('*', (req, res) => {
     res.sendFile(path.join(frontendDist, 'index.html'));
   });
+
+  console.log('Serving frontend from', frontendDist);
+} else {
+  console.log('No frontend build found at', frontendDist, '- frontend routes disabled.');
 }
 
 const app = express();
