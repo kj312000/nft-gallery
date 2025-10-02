@@ -1,0 +1,90 @@
+/* src/pages/Upload.css */
+.upload-card {
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(15, 15, 15, 0.04);
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px
+}
+
+.file-field input[type=file] {
+  display: block
+}
+
+.file-hint {
+  font-size: 13px;
+  color: #666;
+  margin-top: 8px
+}
+
+.preview img {
+  max-width: 240px;
+  border-radius: 8px;
+  display: block;
+  margin-top: 6px
+}
+
+.row {
+  display: flex;
+  gap: 12px
+}
+
+.row input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e6e8eb
+}
+
+textarea {
+  min-height: 50px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e6e8eb
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center
+}
+
+button.primary {
+  background: #2563eb;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 0
+}
+
+.status {
+  margin-top: 8px;
+  color: #0b6623;
+}
+
+.error {
+  margin-top: 8px;
+  color: #b91c1c;
+}
+
+.note {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #666
+}
+
+@media (max-width:700px) {
+  .row {
+    flex-direction: column
+  }
+
+  .preview img {
+    max-width: 100%
+  }
+}
