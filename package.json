@@ -1,0 +1,8 @@
+{
+  "name": "nft-gallery-root",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build && cd ../api && npm install",
+    "start": "cd api && node index.js"
+  }
+}

@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "cd frontend && npm ci && npm run build && cd ../api && npm ci",
-    "start": "node api/index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "bs58": "^5.0.0",
@@ -20,7 +20,6 @@
     "undici": "^7.16.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "concurrently": "^7.0.0"
+    "nodemon": "^3.0.1"
   }
 }
