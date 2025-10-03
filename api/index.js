@@ -10,8 +10,11 @@ const bs58 = require('bs58');
 const nacl = require('tweetnacl');
 const path = require('path');
 
-// after your other routes and before app.listen
-// Serve frontend build when present
+const app = express();
+
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+
 const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
 
 const fs = require('fs');
@@ -26,10 +29,6 @@ if (fs.existsSync(frontendDist)) {
 } else {
   console.log('No frontend build found at', frontendDist, '- frontend routes disabled.');
 }
-
-const app = express();
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
 
 // --- Config ---
 const PORT = process.env.PORT || 4000;
