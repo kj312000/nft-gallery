@@ -15,21 +15,6 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
-
-const fs = require('fs');
-if (fs.existsSync(frontendDist)) {
-  app.use(express.static(frontendDist));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendDist, 'index.html'));
-  });
-
-  console.log('Serving frontend from', frontendDist);
-} else {
-  console.log('No frontend build found at', frontendDist, '- frontend routes disabled.');
-}
-
 // --- Config ---
 const PORT = process.env.PORT || 4000;
 const WEB3_STORAGE_TOKEN = process.env.WEB3_STORAGE_TOKEN; // <-- set this to your web3.storage token
@@ -39,10 +24,8 @@ if (!WEB3_STORAGE_TOKEN) {
   // don't exit so server can still run for dev, but uploads will fail until token provided
 }
 
-// --- multer memory storage ---
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } }); // 50MB
 
-// --- helper: verify solana signature (optional) ---
 function verifySolSignature({ publicKey, message, signature }) {
   if (!publicKey || !message || !signature) return false;
   try {
@@ -56,7 +39,6 @@ function verifySolSignature({ publicKey, message, signature }) {
   }
 }
 
-// --- helper: upload buffer to web3.storage (raw HTTP API) ---
 async function uploadBufferToWeb3Storage(buffer, filename, contentType) {
   if (!WEB3_STORAGE_TOKEN) throw new Error('WEB3_STORAGE_TOKEN not configured');
 
@@ -81,8 +63,6 @@ async function uploadBufferToWeb3Storage(buffer, filename, contentType) {
     throw new Error(`web3.storage upload failed: ${res.status} ${res.statusText} - ${errBody}`);
   }
 
-  // web3.storage returns an object like { cid: '<cid>', dagSize: ..., created: ... }
-  // historically it was { ok: true, value: { cid: '...' } } for some endpoints; handle both
   const cid = json.cid || (json.value && json.value.cid) || (json.ok && json.value && json.value.cid);
   if (!cid) {
     throw new Error(`Could not parse CID from web3.storage response: ${JSON.stringify(json)}`);
@@ -90,8 +70,6 @@ async function uploadBufferToWeb3Storage(buffer, filename, contentType) {
   return cid;
 }
 
-// --- upload endpoint ---
-// Accepts multipart form: file=@..., name, description, tags (csv or repeated), optional publicKey,message,signature for verification
 app.post('/api/uploads/upload', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'file is required in "file" field' });
@@ -165,8 +143,6 @@ app.post('/api/uploads/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// --- list endpoint: fetch uploads from web3.storage for the account tied to the token ---
-// Supports query params: limit (default 50), before (cursor) for pagination
 app.get('/api/uploads', async (req, res) => {
   try {
     if (!WEB3_STORAGE_TOKEN) return res.status(500).json({ error: 'WEB3_STORAGE_TOKEN not configured' });
@@ -203,7 +179,21 @@ app.get('/api/uploads', async (req, res) => {
   }
 });
 
-// --- health ---
 app.get('/health', (req, res) => res.json({ ok: true }));
 
-app.listen(PORT, () => console.log(`API server listening at http://localhost:${PORT}`));
+const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
+
+const fs = require('fs');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+
+  console.log('Serving frontend from', frontendDist);
+} else {
+  console.log('No frontend build found at', frontendDist, '- frontend routes disabled.');
+}
+
+app.listen(PORT, () => console.log(`API server listening at :${PORT}`));
