@@ -1,8 +1,14 @@
-/* src/App.css */
 :root {
     --bg: #f3f6fb;
     --card: #ffffff;
     --muted: #666;
+    --accent: #1e40af;
+    --accent-plain: #eef2ff;
+}
+
+/* base */
+* {
+    box-sizing: border-box;
 }
 
 body,
@@ -12,7 +18,9 @@ html,
     margin: 0;
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     background: var(--bg);
-    color: #111
+    color: #111;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .app {
@@ -21,33 +29,70 @@ html,
     padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 18px
+    gap: 18px;
 }
 
+/* header */
 .app-header {
     display: flex;
-    gap: 18px;
+    gap: 12px;
     align-items: center;
     justify-content: space-between;
     background: var(--card);
-    padding: 14px 24px !important;
+    padding: 12px 18px;
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(12, 12, 12, 0.04)
+    box-shadow: 0 8px 20px rgba(12, 12, 12, 0.04);
+    position: relative;
+    flex-wrap: wrap;
+    /* allow items to wrap on small screens */
 }
 
+/* left block groups brand + mobile hamburger */
+.left-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 10px;
+}
+
+/* brand */
 .brand h1 {
     margin: 0;
-    font-size: 20px
+    font-size: 18px;
+    line-height: 1;
 }
 
 .brand .tag {
-    font-size: 13px;
-    color: var(--muted)
+    font-size: 12px;
+    color: var(--muted);
 }
 
+/* hamburger (mobile) */
+.hamburger {
+    display: none;
+    /* shown on small screens via media query */
+    background: transparent;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #333;
+    align-items: center;
+}
+
+/* top nav (desktop) */
 .top-nav {
     display: flex;
-    gap: 8px
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* wrap nav-list so mobile wallet can sit at bottom */
+.nav-list {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 .nav-btn {
@@ -57,28 +102,204 @@ html,
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    color: #333
+    color: #333;
+    transition: background 150ms ease, color 150ms ease;
+    white-space: nowrap;
+}
+
+.nav-btn:hover {
+    background: rgba(0, 0, 0, 0.03);
 }
 
 .nav-btn.active {
-    background: #eef2ff;
-    color: #1e40af
+    background: var(--accent-plain);
+    color: var(--accent);
 }
 
+/* wallet area */
 .wallet-area {
     display: flex;
     gap: 12px;
     align-items: center;
+    margin-left: auto;
 }
 
 .balance {
     font-size: 13px;
-    color: var(--muted)
+    color: var(--muted);
+    min-width: 80px;
+    text-align: right;
 }
 
+.wallet-btn {
+    display: flex;
+    align-items: center;
+}
+
+/* main */
 .main {
     min-height: 360px;
     display: flex;
     gap: 18px;
-    flex-direction: column
+    flex-direction: column;
+}
+
+/* Responsive rules */
+@media (max-width: 900px) {
+    .app {
+        padding: 14px;
+    }
+
+    .brand h1 {
+        font-size: 17px;
+    }
+
+    .balance {
+        min-width: 64px;
+        font-size: 12px;
+    }
+}
+
+/* Small screens: collapse nav into a dropdown (mobile) */
+/* Key idea: top-nav becomes a vertical flex column; nav-list gets flex:1 and centers children vertically;
+   mobile-wallet naturally stays after nav-list and appears pinned to bottom. */
+@media (max-width: 700px) {
+    .app {
+        margin: 10px;
+        padding: 12px;
+    }
+
+    .hamburger {
+        display: inline-flex;
+    }
+
+    /* hide desktop wallet area on small screens (we show mobile-wallet inside menu) */
+    .wallet-area {
+        display: none;
+    }
+
+    .top-nav {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        top: calc(100% + 8px);
+        background: var(--card);
+        box-shadow: 0 10px 30px rgba(12, 12, 12, 0.08);
+        border-radius: 10px;
+        padding: 12px;
+        flex-direction: column;
+        gap: 12px;
+        display: none;
+        /* hidden by default */
+        z-index: 60;
+        max-height: 78vh;
+        /* allow menu to be tall on larger phones, but not full screen */
+        height: auto;
+        overflow: hidden;
+    }
+
+    .top-nav.open {
+        display: flex;
+    }
+
+    /* make nav-list take available vertical space and center its children vertically */
+    .nav-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+        justify-content: center;
+        /* vertical centering because nav-list will grow with flex:1 */
+        flex: 1;
+        padding: 6px 4px;
+    }
+
+    /* make nav buttons full width on mobile */
+    .nav-btn {
+        width: 100%;
+        text-align: left;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 10px;
+    }
+
+    /* mobile wallet block at bottom of collapsed menu */
+    .mobile-wallet {
+        margin-top: 0;
+        padding-top: 8px;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        flex-shrink: 0;
+        /* keep it visible at bottom */
+    }
+
+    .mobile-wallet-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .mobile-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #222;
+    }
+
+    .mobile-balance {
+        font-size: 12px;
+        color: var(--muted);
+    }
+
+    .mobile-wallet-btn {
+        display: flex;
+    }
+
+    /* ensure header content doesn't look cramped */
+    .app-header {
+        padding: 12px;
+        align-items: flex-start;
+    }
+}
+
+/* extra small screens */
+@media (max-width: 420px) {
+    .brand h1 {
+        font-size: 16px;
+    }
+
+    .brand .tag {
+        font-size: 11px;
+    }
+
+    .nav-btn {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* hide mobile wallet area on large screens */
+.mobile-wallet {
+    display: none;
+}
+
+/* show it only when screen is small */
+@media (max-width: 700px) {
+    .mobile-wallet {
+        display: flex;
+    }
+
+    /* and hide the desktop header wallet area */
+    .wallet-area {
+        display: none;
+    }
+
+    .left-block {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
